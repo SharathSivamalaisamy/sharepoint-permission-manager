@@ -17,23 +17,35 @@ This tool shows you everything in one view: who has access, through which mechan
 
 ---
 
-## Why SharePoint REST API (not just Graph)
+## How the permission lookup works
 
-The Microsoft Graph API (`/sites/{id}/permissions`) is the obvious choice, but it's incomplete for this use case. Graph returns high-level sharing links and app grants — it doesn't expose SharePoint's internal role assignment model (Full Control, Contribute, Read, custom levels, broken inheritance).
+SharePoint has two separate APIs and you need both to get the full picture.
 
-To get the full picture you need the SharePoint REST API:
+**Step 1 — Start with Microsoft Graph for user and group identity**
+
+Graph is great for resolving who someone is: their display name, M365 Group memberships, and org-level user details. Use it for lookups like:
 
 ```
-GET https://{domain}/sites/{site}/_api/web/roleassignments?$expand=Member,RoleDefinitionBindings
+GET https://graph.microsoft.com/v1.0/groups/{id}/members
+GET https://graph.microsoft.com/v1.0/users/{id}
 ```
 
-This returns the actual SharePoint permission inheritance tree, including:
-- Broken inheritance at list/library level
-- Custom permission levels
-- SharePoint Groups with their members
-- Direct user assignments
+**Step 2 — Use the SharePoint REST API for the actual permission model**
 
-The app uses **both APIs**: Graph for M365 Group membership and user lookups, SharePoint REST for the actual permission model.
+This is where most integrations go wrong. The Graph `/sites/{id}/permissions` endpoint only returns sharing links and app grants — it won't tell you who has Full Control, who is in a SharePoint Group, or which libraries have broken inheritance.
+
+For that, you need:
+
+```
+GET https://{domain}/sites/{site}/_api/web/roleassignments
+    ?$expand=Member,RoleDefinitionBindings
+```
+
+This gives you the real permission tree: every role assignment on the site, the SharePoint Groups behind them, the permission levels (Full Control, Contribute, Read, or custom), and whether inheritance has been broken at the library level.
+
+**Step 3 — Join the two together**
+
+A user might appear in both: as a member of an M365 Group (from Graph) and as a direct assignee in a SharePoint Group (from the REST API). The app resolves both and surfaces them in a single view so you're not hunting across two admin centers.
 
 ---
 
