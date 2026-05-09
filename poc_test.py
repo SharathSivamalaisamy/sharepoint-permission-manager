@@ -25,13 +25,12 @@ from dotenv import load_dotenv
 from msal import PublicClientApplication
 
 # ── Load credentials ──────────────────────────────────────────────────
-ENV_PATH = r"C:\Users\shara\OneDrive\Documents\claude\REDDIT\sharepoint.env"
-load_dotenv(ENV_PATH)
+load_dotenv()  # loads .env from current directory
 
 TENANT_ID = os.getenv("TENANT_ID")
 CLIENT_ID = os.getenv("CLIENT_ID")
-SP_DOMAIN = os.getenv("SHAREPOINT_DOMAIN")       # sharathconsulting.sharepoint.com
-SP_SITE = os.getenv("SHAREPOINT_SITE")            # TestCompany
+SP_DOMAIN = os.getenv("SHAREPOINT_DOMAIN")       # e.g. yourcompany.sharepoint.com
+SP_SITE = os.getenv("SHAREPOINT_SITE")            # e.g. YourSiteName
 
 SITE_URL = f"https://{SP_DOMAIN}/sites/{SP_SITE}"
 API_BASE = f"{SITE_URL}/_api"
