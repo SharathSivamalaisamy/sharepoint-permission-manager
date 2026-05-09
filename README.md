@@ -113,15 +113,3 @@ frontend/
 ```
 
 ---
-
-## Status
-
-**Paused.** The technical work is complete and functional. Evaluated the market and concluded the B2B sales cycle (security review, procurement) is too long for a solo indie product. Established competitors (SysKit, ShareGate) have a multi-year head start.
-
-Good reference implementation for anyone building Microsoft 365 integrations with delegated auth.
-
----
-
-## License
-
-MIT
